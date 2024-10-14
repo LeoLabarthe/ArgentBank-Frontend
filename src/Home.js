@@ -1,8 +1,8 @@
 import React from "react";
-import logo from "./img/argentBankLogo.png"; 
+import logo from "./img/argentBankLogo.png";
 import chatIcon from "./img/icon-chat.png";
 import moneyIcon from "./img/icon-money.png";
-import securityIcon from "./img/icon-security.png";
+import securityIcon from "./img/icon-security.png"; 
 
 const Nav = () => {
   return (
