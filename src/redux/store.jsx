@@ -1,15 +1,15 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { authReducer } from './reducers/auth.reducer.jsx';
-import { userReducer } from './reducers/user.reducer.jsx';
+import { authReducer } from './reducers/auth.reducer';
+import { userReducer } from './reducers/user.reducer';
 
 const rootReducer = combineReducers({
-   auth: authReducer,
-   user: userReducer
-})
+  auth: authReducer,
+  user: userReducer,
+});
 
 const store = configureStore({
-    reducer: rootReducer,
-    devTools: true 
-})
+  reducer: rootReducer,
+  devTools: true,  // Active les devtools de Redux
+});
 
-export default store
+export default store;

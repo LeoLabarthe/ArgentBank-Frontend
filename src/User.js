@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { updateUsername } from "./redux/actions/user.actions";
 import logo from "./img/argentBankLogo.png";
 
 const Nav = () => {
+  const username = useSelector((state) => state.user.userData.username);  // Récupère le nom d'utilisateur depuis Redux
+
   return (
     <nav className="main-nav">
       <a className="main-nav-logo" href="/">
@@ -13,7 +16,7 @@ const Nav = () => {
       <div>
         <a className="main-nav-item" href="/user">
           <i className="fa fa-user-circle"></i>
-          Tony
+          {username ? username : "Tony"}
         </a>
         <a className="main-nav-item" href="/">
           <i className="fa fa-sign-out"></i>
@@ -40,11 +43,59 @@ const UserAccount = ({ title, amount, description }) => {
 };
 
 const UserProfile = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.user.userData);  // Récupère les informations utilisateur depuis Redux
+
+  const [editMode, setEditMode] = useState(false);
+  const [newUsername, setNewUsername] = useState(userData.username || "Tony");
+  const [firstName, setFirstName] = useState(userData.firstName || "");
+  const [lastName, setLastName] = useState(userData.lastName || "");
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    dispatch(updateUsername({ username: newUsername, firstName, lastName }));
+    setEditMode(false);
+  };
+
   return (
     <main className="main bg-dark">
       <div className="header">
-        <h1>Welcome back<br />Tony Jarvis!</h1>
-        <button className="edit-button">Edit Name</button>
+        <h1>Welcome back<br />{userData.firstName} {userData.lastName}!</h1>
+        {editMode ? (
+          <form onSubmit={handleSave} className="edit-username-form">
+            <div className="input-wrapper">
+              <label htmlFor="username">User name:</label>
+              <input 
+                type="text" 
+                id="username" 
+                value={newUsername} 
+                onChange={(e) => setNewUsername(e.target.value)} 
+              />
+            </div>
+            <div className="input-wrapper">
+              <label htmlFor="firstName">First name:</label>
+              <input 
+                type="text" 
+                id="firstName" 
+                value={firstName} 
+                onChange={(e) => setFirstName(e.target.value)} 
+              />
+            </div>
+            <div className="input-wrapper">
+              <label htmlFor="lastName">Last name:</label>
+              <input 
+                type="text" 
+                id="lastName" 
+                value={lastName} 
+                onChange={(e) => setLastName(e.target.value)} 
+              />
+            </div>
+            <button type="submit" className="save-button">Save</button>
+            <button type="button" className="cancel-button" onClick={() => setEditMode(false)}>Cancel</button>
+          </form>
+        ) : (
+          <button className="edit-button" onClick={() => setEditMode(true)}>Edit Name</button>
+        )}
       </div>
       <h2 className="sr-only">Accounts</h2>
       <UserAccount

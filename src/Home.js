@@ -13,7 +13,7 @@ const Nav = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');  // Supprime le token du localStorage
+    localStorage.removeItem('authToken');
     dispatch(logout());  // Réinitialise l'état de connexion dans Redux
     navigate('/sign-in');
   };
