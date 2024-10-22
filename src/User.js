@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import logo from "./img/argentBankLogo.png";
 
 const Nav = () => {
@@ -73,6 +75,16 @@ const Footer = () => {
 };
 
 const User = () => {
+  const navigate = useNavigate();
+  const isConnected = useSelector((state) => state.auth.isConnected);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token || !isConnected) {
+      navigate("/sign-in");
+    }
+  }, [isConnected, navigate]);
+
   return (
     <>
       <Nav />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailed } from "./redux/actions/auth.actions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "./img/argentBankLogo.png";
 
 const Nav = () => {
@@ -25,11 +25,13 @@ const SignInForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const { error } = useSelector((state) => state.auth);  // Récupère les erreurs d'auth
+  const navigate = useNavigate();
+  const { error } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log('Form submitted');
+  
     try {
       const response = await fetch('http://localhost:3001/api/v1/user/login', {
         method: 'POST',
@@ -38,17 +40,27 @@ const SignInForm = () => {
         },
         body: JSON.stringify({ email: username, password }),
       });
-
+  
       const data = await response.json();
+      console.log('API response:', data);
+  
       if (response.ok) {
-        dispatch(loginSuccess(data.body.token));  // Dispatch l'action de succès avec le token
+        const token = data.body.token;
+        dispatch(loginSuccess(token));  // Dispatch du succès avec le token
+  
+        // Sauvegarde du token dans localStorage pour la persistance
+        localStorage.setItem('authToken', token);
+  
+        // Redirection vers la page utilisateur après connexion réussie
+        navigate('/user');
       } else {
-        dispatch(loginFailed(data.message));  // Dispatch l'action d'échec avec le message d'erreur
+        dispatch(loginFailed(data.message));  // Dispatch en cas d'échec
       }
     } catch (error) {
-      dispatch(loginFailed("Network error"));  // En cas d'erreur réseau
+      dispatch(loginFailed("Network error"));
     }
   };
+  
 
   return (
     <main className="main bg-dark">
@@ -86,20 +98,11 @@ const SignInForm = () => {
   );
 };
 
-const Footer = () => {
-  return (
-    <footer className="footer">
-      <p className="footer-text">Copyright 2020 Argent Bank</p>
-    </footer>
-  );
-};
-
 const SignIn = () => {
   return (
     <>
-      <Nav />
-      <SignInForm />
-      <Footer />
+      <Nav />  {}
+      <SignInForm />  {}
     </>
   );
 };

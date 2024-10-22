@@ -1,21 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { loginSuccess, logout } from "./redux/actions/auth.actions";
 import logo from "./img/argentBankLogo.png";
 import chatIcon from "./img/icon-chat.png";
 import moneyIcon from "./img/icon-money.png";
-import securityIcon from "./img/icon-security.png"; 
+import securityIcon from "./img/icon-security.png";
 
 const Nav = () => {
+  const dispatch = useDispatch();
+  const isConnected = useSelector((state) => state.auth.isConnected);  // Vérifie l'état de connexion
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');  // Supprime le token du localStorage
+    dispatch(logout());  // Réinitialise l'état de connexion dans Redux
+    navigate('/sign-in');
+  };
+
   return (
     <nav className="main-nav">
-      <a className="main-nav-logo" href="/">
+      <Link className="main-nav-logo" to="/">
         <img className="main-nav-logo-image" src={logo} alt="Argent Bank Logo" />
         <h1 className="sr-only">Argent Bank</h1>
-      </a>
+      </Link>
       <div>
-        <a className="main-nav-item" href="/sign-in">
-          <i className="fa fa-user-circle"></i>
-          Sign In
-        </a>
+        {isConnected ? (
+          <>
+            <Link className="main-nav-item" to="/user">
+              <i className="fa fa-user-circle"></i> Tony
+            </Link>
+            <button onClick={handleLogout} className="main-nav-item">
+              <i className="fa fa-sign-out"></i> Sign Out
+            </button>
+          </>
+        ) : (
+          <Link className="main-nav-item" to="/sign-in">
+            <i className="fa fa-user-circle"></i> Sign In
+          </Link>
+        )}
       </div>
     </nav>
   );
@@ -75,6 +98,15 @@ const Footer = () => {
 };
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      dispatch(loginSuccess(token));  // Restaure l'état de connexion à partir du localStorage
+    }
+  }, [dispatch]);
+
   return (
     <>
       <Nav />
