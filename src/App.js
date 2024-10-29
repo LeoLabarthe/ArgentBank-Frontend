@@ -1,31 +1,30 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "./redux/actions/auth.actions";  // Import de l'action loginSuccess
-import SignIn from "./Sign-in";
-import User from "./User"; 
-import Home from "./Home";
+import React from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
+import Home from './pages/Home/Home.jsx';
+import Login from './pages/Login/Login.jsx';
+import Profile from './pages/Profile/Profile.jsx';
+import Error from './pages/Error/Error.jsx';
+import './sass/_Main.scss';
 
-const App = () => {
-  const dispatch = useDispatch();
+export default function App () {
+    const isConnected = useSelector((state) => state.auth.isConnected);
 
-  // Vérification du localStorage au démarrage de l'application
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      dispatch(loginSuccess(token));  // Restaure l'état de connexion si le token est présent
-    }
-  }, [dispatch]);
-
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />  {/* Page d'accueil */}
-        <Route path="/sign-in" element={<SignIn />} />  {/* Page de connexion */}
-        <Route path="/user" element={<User />} />  {/* Page utilisateur après connexion */}
-      </Routes>
-    </Router>
-  );
-};
-
-export default App;
+    return (
+        <div>
+            <Header />
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='login' element={<Login />} />
+                <Route 
+                    path='profile' 
+                    element={isConnected ? <Profile /> : <Navigate to="/login" />} 
+                />
+                <Route path='*' element={<Error />} />
+            </Routes>
+            <Footer />
+        </div>
+    )  
+}
